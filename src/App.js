@@ -2,9 +2,10 @@ import ShoppingListDetail from "./components/ShoppingListDetail/ShoppingListDeta
 import "./App.css";
 
 const currentUser = {
-  id: 2,
-  name: "Pepa",
+  id: 1,
+  name: "Alena",
 };
+
 
 const initialData = {
   id: 1,

@@ -10,21 +10,25 @@ function ShoppingListDetail({ initialData, currentUser }) {
   const [showDone, setShowDone] = useState(false);
   const [newItem, setNewItem] = useState("");
   const [newMemberName, setNewMemberName] = useState("");
-  const [editedName, setEditedName] = useState(list.name);
 
   const isOwner = currentUser.id === list.owner.id;
 
-  // --- položky ---
+  // ---------- POLOŽKY ----------
+
   const handleAddItem = () => {
     if (newItem.trim() === "") return;
 
     const newItemObj = {
       id: Date.now(),
-      name: newItem,
+      name: newItem.trim(),
       done: false,
     };
 
-    setList({ ...list, items: [...list.items, newItemObj] });
+    setList({
+      ...list,
+      items: [...list.items, newItemObj],
+    });
+
     setNewItem("");
   };
 
@@ -44,63 +48,114 @@ function ShoppingListDetail({ initialData, currentUser }) {
     showDone ? true : !item.done
   );
 
-  // --- členové ---
-  const handleAddMember = () => {
+  // ---------- ČLENOVÉ ----------
+
+  // použití:
+  //  - MembersTab: bez argumentu → vezme jméno z newMemberName (stav rodiče)
+  //  - SettingsTab: volá s name → použije se ten
+  const handleAddMember = (nameFromSettings) => {
     if (!isOwner) return;
-    if (newMemberName.trim() === "") return;
+
+    const name = (nameFromSettings ?? newMemberName).trim();
+    if (!name) return;
 
     const newMember = {
       id: Date.now(),
-      name: newMemberName,
+      name,
     };
 
-    setList({ ...list, members: [...list.members, newMember] });
+    setList({
+      ...list,
+      members: [...list.members, newMember],
+    });
+
     setNewMemberName("");
   };
 
   const handleRemoveMember = (memberId) => {
     if (!isOwner) return;
-    const members = list.members.filter((m) => m.id !== memberId);
-    setList({ ...list, members });
+
+    const updatedMembers = list.members.filter((m) => m.id !== memberId);
+
+    setList({
+      ...list,
+      members: updatedMembers,
+    });
   };
 
   const handleLeaveList = () => {
-    const members = list.members.filter((m) => m.id !== currentUser.id);
-    setList({ ...list, members });
+    const updatedMembers = list.members.filter(
+      (m) => m.id !== currentUser.id
+    );
+
+    setList({
+      ...list,
+      members: updatedMembers,
+    });
   };
 
-  // --- název seznamu ---
-  const handleSaveName = () => {
+  // předání vlastnictví jinému členovi
+  const handleTransferOwnership = (memberId) => {
     if (!isOwner) return;
-    if (editedName.trim() === "") return;
-    setList({ ...list, name: editedName });
+    if (!memberId) return;
+
+    const target = list.members.find((m) => m.id === memberId);
+    if (!target) return;
+
+    // nový seznam členů: všichni kromě nového vlastníka + původní vlastník jako člen
+    const remainingMembers = list.members.filter((m) => m.id !== memberId);
+    const updatedMembers = [...remainingMembers, list.owner];
+
+    setList({
+      ...list,
+      owner: target,
+      members: updatedMembers,
+    });
   };
+
+  // ---------- NÁZEV SEZNAMU ----------
+
+  const handleRenameList = (newName) => {
+    if (!isOwner) return;
+    const name = newName.trim();
+    if (!name) return;
+
+    setList({
+      ...list,
+      name,
+    });
+  };
+
+  // ---------- RENDER ----------
 
   return (
     <div>
-      {/* hlavička: nejdřív Návrat, pod tím nadpis */}
-     <header style={{ marginBottom: 20 }}>
-  <button
-    style={{ border: "none", background: "none", cursor: "pointer" }}
-  >
-    ← Návrat
-  </button>
+      {/* Hlavička – Návrat / nákupní seznam / název */}
+      <header style={{ marginBottom: 20 }}>
+        <button
+          style={{
+            border: "none",
+            background: "none",
+            cursor: "pointer",
+          }}
+        >
+          ← Návrat
+        </button>
 
-  <div style={{ marginTop: 12 }}>
-    <div
-      style={{
-        fontSize: 14,
-        fontWeight: "normal",
-        color: "#555",
-        marginBottom: 4,
-      }}
-    >
-      nákupní seznam :
-    </div>
-    <h1 style={{ margin: 0 }}>{list.name}</h1>
-  </div>
-</header>
-
+        <div style={{ marginTop: 12 }}>
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: "normal",
+              color: "#555",
+              marginBottom: 4,
+            }}
+          >
+            nákupní seznam :
+          </div>
+          <h1 style={{ margin: 0 }}>{list.name}</h1>
+        </div>
+      </header>
 
       <Tabs activeTab={activeTab} onChangeTab={setActiveTab} />
 
@@ -129,16 +184,17 @@ function ShoppingListDetail({ initialData, currentUser }) {
           onAddMember={handleAddMember}
           onRemoveMember={handleRemoveMember}
           onLeaveList={handleLeaveList}
+          onTransferOwnership={handleTransferOwnership}
         />
       )}
 
       {activeTab === "settings" && (
         <SettingsTab
-          listName={list.name}
-          editedName={editedName}
-          onEditedNameChange={setEditedName}
-          onSaveName={handleSaveName}
+          list={list}
           isOwner={isOwner}
+          onRenameList={handleRenameList}
+          onAddMember={handleAddMember}
+          onRemoveMember={handleRemoveMember}
         />
       )}
     </div>
