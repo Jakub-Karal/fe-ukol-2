@@ -1,4 +1,5 @@
 import ShoppingListDetail from "./components/ShoppingListDetail/ShoppingListDetail";
+import "./App.css";
 
 const currentUser = {
   id: 2,
@@ -8,10 +9,7 @@ const currentUser = {
 const initialData = {
   id: 1,
   name: "Nákup na víkend",
-  owner: {
-    id: 1,
-    name: "Alena",
-  },
+  owner: { id: 1, name: "Alena" },
   members: [
     { id: 2, name: "Pepa" },
     { id: 3, name: "Lenka" },
@@ -24,8 +22,10 @@ const initialData = {
 
 function App() {
   return (
-    <div>
-      <ShoppingListDetail initialData={initialData} currentUser={currentUser} />
+    <div className="app-root">
+      <div className="phone">
+        <ShoppingListDetail initialData={initialData} currentUser={currentUser} />
+      </div>
     </div>
   );
 }

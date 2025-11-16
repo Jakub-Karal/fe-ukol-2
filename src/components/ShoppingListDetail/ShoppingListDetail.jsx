@@ -79,8 +79,9 @@ function ShoppingListDetail({ initialData, currentUser }) {
     setList({ ...list, name: editedName });
   };
 
-  return (
-    <div style={{ padding: 20, maxWidth: 800, margin: "0 auto" }}>
+return (
+  <div>
+
       {/* hlavička podle wireframu */}
       <header
         style={{
