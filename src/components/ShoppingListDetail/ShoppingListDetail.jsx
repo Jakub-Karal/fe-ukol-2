@@ -79,12 +79,28 @@ function ShoppingListDetail({ initialData, currentUser }) {
   return (
     <div>
       {/* hlavička: nejdřív Návrat, pod tím nadpis */}
-      <header style={{ marginBottom: 20 }}>
-        <button style={{ border: "none", background: "none", cursor: "pointer" }}>
-          ← Návrat
-        </button>
-        <h1 style={{ margin: "8px 0 0 0" }}>Nákupní seznam</h1>
-      </header>
+     <header style={{ marginBottom: 20 }}>
+  <button
+    style={{ border: "none", background: "none", cursor: "pointer" }}
+  >
+    ← Návrat
+  </button>
+
+  <div style={{ marginTop: 12 }}>
+    <div
+      style={{
+        fontSize: 14,
+        fontWeight: "normal",
+        color: "#555",
+        marginBottom: 4,
+      }}
+    >
+      nákupní seznam :
+    </div>
+    <h1 style={{ margin: 0 }}>{list.name}</h1>
+  </div>
+</header>
+
 
       <Tabs activeTab={activeTab} onChangeTab={setActiveTab} />
 
