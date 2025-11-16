@@ -6,8 +6,6 @@ function ItemsTab({
   allItems,
   showDone,
   onShowDoneChange,
-  searchTerm,
-  onSearchTermChange,
   newItem,
   onNewItemChange,
   onAddItem,
@@ -16,18 +14,9 @@ function ItemsTab({
 }) {
   return (
     <div>
-      <ItemsFilter
-        showDone={showDone}
-        onShowDoneChange={onShowDoneChange}
-        searchTerm={searchTerm}
-        onSearchTermChange={onSearchTermChange}
-      />
+      <ItemsFilter showDone={showDone} onShowDoneChange={onShowDoneChange} />
 
-      <ItemsList
-        items={items}
-        onToggleDone={onToggleDone}
-        onRemoveItem={onRemoveItem}
-      />
+      <ItemsList items={items} onToggleDone={onToggleDone} onRemoveItem={onRemoveItem} />
 
       <div style={{ marginTop: 10 }}>
         <input
@@ -38,10 +27,6 @@ function ItemsTab({
         />
         <button onClick={onAddItem}>Přidat</button>
       </div>
-
-      <p style={{ marginTop: 10, fontSize: "0.9em", color: "#555" }}>
-        Celkem položek: {allItems.length}
-      </p>
     </div>
   );
 }

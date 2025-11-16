@@ -1,15 +1,9 @@
-function ItemsFilter({
-  showDone,
-  onShowDoneChange,
-  searchTerm,
-  onSearchTermChange,
-}) {
+function ItemsFilter({ showDone, onShowDoneChange }) {
   return (
     <div
       style={{
         marginBottom: 10,
         display: "flex",
-        gap: 20,
         alignItems: "center",
       }}
     >
@@ -19,15 +13,8 @@ function ItemsFilter({
           checked={showDone}
           onChange={(e) => onShowDoneChange(e.target.checked)}
         />{" "}
-        Zobrazit včetně vyřešených
+        Zobrazit i vyřešené
       </label>
-
-      <input
-        type="text"
-        placeholder="Hledat položku"
-        value={searchTerm}
-        onChange={(e) => onSearchTermChange(e.target.value)}
-      />
     </div>
   );
 }

@@ -8,7 +8,6 @@ function ShoppingListDetail({ initialData, currentUser }) {
   const [list, setList] = useState(initialData);
   const [activeTab, setActiveTab] = useState("items");
   const [showDone, setShowDone] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [newItem, setNewItem] = useState("");
   const [newMemberName, setNewMemberName] = useState("");
   const [editedName, setEditedName] = useState(list.name);
@@ -41,11 +40,9 @@ function ShoppingListDetail({ initialData, currentUser }) {
     setList({ ...list, items });
   };
 
-  const filteredItems = list.items
-    .filter((item) => (showDone ? true : !item.done))
-    .filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const filteredItems = list.items.filter((item) =>
+    showDone ? true : !item.done
+  );
 
   // --- členové ---
   const handleAddMember = () => {
@@ -72,27 +69,21 @@ function ShoppingListDetail({ initialData, currentUser }) {
     setList({ ...list, members });
   };
 
-  // --- název seznamu (Settings) ---
+  // --- název seznamu ---
   const handleSaveName = () => {
     if (!isOwner) return;
     if (editedName.trim() === "") return;
     setList({ ...list, name: editedName });
   };
 
-return (
-  <div>
-
-      {/* hlavička podle wireframu */}
-      <header
-        style={{
-          marginBottom: 20,
-          display: "flex",
-          gap: 10,
-          alignItems: "center",
-        }}
-      >
-        <button>{"←"} Návrat</button>
-        <h1 style={{ margin: 0 }}>Nákupní seznam</h1>
+  return (
+    <div>
+      {/* hlavička: nejdřív Návrat, pod tím nadpis */}
+      <header style={{ marginBottom: 20 }}>
+        <button style={{ border: "none", background: "none", cursor: "pointer" }}>
+          ← Návrat
+        </button>
+        <h1 style={{ margin: "8px 0 0 0" }}>Nákupní seznam</h1>
       </header>
 
       <Tabs activeTab={activeTab} onChangeTab={setActiveTab} />
@@ -103,8 +94,6 @@ return (
           allItems={list.items}
           showDone={showDone}
           onShowDoneChange={setShowDone}
-          searchTerm={searchTerm}
-          onSearchTermChange={setSearchTerm}
           newItem={newItem}
           onNewItemChange={setNewItem}
           onAddItem={handleAddItem}
