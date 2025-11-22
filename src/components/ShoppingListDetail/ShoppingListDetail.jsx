@@ -4,7 +4,8 @@ import ItemsTab from "./ItemsTab";
 import MembersTab from "./MembersTab";
 import SettingsTab from "./SettingsTab";
 
-function ShoppingListDetail({ initialData, currentUser }) {
+function ShoppingListDetail({ initialData, currentUser, onBack }) {
+
   const [list, setList] = useState(initialData);
   const [activeTab, setActiveTab] = useState("items");
   const [showDone, setShowDone] = useState(false);
@@ -132,15 +133,17 @@ function ShoppingListDetail({ initialData, currentUser }) {
     <div>
       {/* Hlavička – Návrat / nákupní seznam / název */}
       <header style={{ marginBottom: 20 }}>
-        <button
-          style={{
-            border: "none",
-            background: "none",
-            cursor: "pointer",
-          }}
-        >
-          ← Návrat
-        </button>
+<button
+  style={{
+    border: "none",
+    background: "none",
+    cursor: "pointer",
+  }}
+  onClick={onBack}
+>
+  ← Návrat
+</button>
+
 
         <div style={{ marginTop: 12 }}>
           <div
