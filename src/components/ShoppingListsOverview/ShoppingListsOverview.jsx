@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ShoppingListTitle from "./ShoppingListTitle";
+import ShoppingListTile from "./ShoppingListTile";
 import NewListModal from "./NewListModal";
 
 function ShoppingListsOverview({
@@ -69,7 +69,7 @@ function ShoppingListsOverview({
           }}
         >
           {visibleLists.map((list) => (
-            <ShoppingListTitle
+            <ShoppingListTile
               key={list.id}
               list={list}
               isOwner={list.owner.id === currentUser.id}
