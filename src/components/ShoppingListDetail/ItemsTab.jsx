@@ -16,7 +16,11 @@ function ItemsTab({
     <div>
       <ItemsFilter showDone={showDone} onShowDoneChange={onShowDoneChange} />
 
-      <ItemsList items={items} onToggleDone={onToggleDone} onRemoveItem={onRemoveItem} />
+      <ItemsList
+        items={items}
+        onToggleDone={onToggleDone}
+        onRemoveItem={onRemoveItem}
+      />
 
       <div style={{ marginTop: 10 }}>
         <input

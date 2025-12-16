@@ -17,23 +17,19 @@ const currentUser = {
 };
 
 function App() {
-  // ================================
-  // Přehled seznamů
-  // ================================
   const [lists, setLists] = useState([]);
-  const [overviewStatus, setOverviewStatus] = useState("pending");
-  const [overviewError, setOverviewError] = useState(null);
 
-  // ================================
-  // Detail
-  // ================================
+  const [overviewStatus, setOverviewStatus] = useState("pending"); // pending | ready | error
+  const [overviewError, setOverviewError] = useState(null);
+  const [overviewActionError, setOverviewActionError] = useState(null);
+
   const [selectedListId, setSelectedListId] = useState(null);
   const [selectedList, setSelectedList] = useState(null);
-  const [detailStatus, setDetailStatus] = useState("ready");
+  const [detailStatus, setDetailStatus] = useState("ready"); // pending | ready | error
   const [detailError, setDetailError] = useState(null);
 
   // ================================
-  // Načtení přehledu (API)
+  // Přehled – načtení (API)
   // ================================
   const loadOverview = async () => {
     setOverviewStatus("pending");
@@ -54,7 +50,19 @@ function App() {
   }, []);
 
   // ================================
-  // Otevření detailu (API)
+  // Helper pro akce v přehledu
+  // ================================
+  const runOverviewAction = async (fn) => {
+    setOverviewActionError(null);
+    try {
+      await fn();
+    } catch (e) {
+      setOverviewActionError(e?.message ?? "Chyba akce");
+    }
+  };
+
+  // ================================
+  // Detail – otevření (API)
   // ================================
   const handleOpenList = async (id) => {
     setSelectedListId(id);
@@ -83,37 +91,34 @@ function App() {
   // CRUD – přes API
   // ================================
   const handleCreateList = async (name) => {
-    try {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    await runOverviewAction(async () => {
       await createList({
-        name,
+        name: trimmed,
         owner: currentUser,
         members: [currentUser],
       });
       await loadOverview();
-    } catch (e) {
-      alert(e?.message ?? "Chyba při vytváření seznamu");
-    }
+    });
   };
 
   const handleDeleteList = async (id) => {
-    try {
+    await runOverviewAction(async () => {
       await deleteList(id);
       await loadOverview();
-    } catch (e) {
-      alert(e?.message ?? "Chyba při mazání seznamu");
-    }
+    });
   };
 
   const handleToggleArchive = async (id) => {
     const list = lists.find((l) => l.id === id);
     if (!list) return;
 
-    try {
+    await runOverviewAction(async () => {
       await updateList(id, { archived: !list.archived });
       await loadOverview();
-    } catch (e) {
-      alert(e?.message ?? "Chyba při archivaci");
-    }
+    });
   };
 
   // ================================
@@ -147,14 +152,22 @@ function App() {
             </button>
           </div>
         ) : (
-          <ShoppingListsOverview
-            lists={lists}
-            currentUser={currentUser}
-            onOpenList={handleOpenList}
-            onCreateList={handleCreateList}
-            onDeleteList={handleDeleteList}
-            onToggleArchive={handleToggleArchive}
-          />
+          <div>
+            {overviewActionError && (
+              <div style={{ marginBottom: 12, color: "crimson" }}>
+                Chyba akce: {overviewActionError}
+              </div>
+            )}
+
+            <ShoppingListsOverview
+              lists={lists}
+              currentUser={currentUser}
+              onOpenList={handleOpenList}
+              onCreateList={handleCreateList}
+              onDeleteList={handleDeleteList}
+              onToggleArchive={handleToggleArchive}
+            />
+          </div>
         )}
       </div>
     </div>
