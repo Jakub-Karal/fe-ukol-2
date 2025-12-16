@@ -1,33 +1,35 @@
 // src/api/shoppingApi.js
 
-// ================================
-// Import implementací
-// ================================
-
 import * as mockApi from "../mocks/mockShoppingApi";
 
 // ================================
 // Přepínač mock / real API podle .env
+// true  = mock API (odevzdání)
+// false = real API (zatím není)
 // ================================
 
-const USE_MOCK_API =
-  process.env.REACT_APP_USE_MOCK_API === "true";
+const USE_MOCK_API = process.env.REACT_APP_USE_MOCK_API === "true";
 
-// import * as realApi from "./realShoppingApi"; // připraveno do budoucna
+function notImplemented(fnName) {
+  return async () => {
+    throw new Error(`${fnName}: Real API není implementováno (USE_MOCK_API=false).`);
+  };
+}
 
-// ================================
-// Výběr aktivní implementace
-// ================================
+const realApi = {
+  getLists: notImplemented("getLists"),
+  getListDetail: notImplemented("getListDetail"),
+  createList: notImplemented("createList"),
+  updateList: notImplemented("updateList"),
+  deleteList: notImplemented("deleteList"),
+  createItem: notImplemented("createItem"),
+  updateItem: notImplemented("updateItem"),
+  deleteItem: notImplemented("deleteItem"),
+  addMember: notImplemented("addMember"),
+  removeMember: notImplemented("removeMember"),
+};
 
-const api = USE_MOCK_API
-  ? mockApi
-  : (() => {
-      throw new Error("Real API není implementováno");
-    })();
-
-// ================================
-// Export jednotného rozhraní
-// ================================
+const api = USE_MOCK_API ? mockApi : realApi;
 
 export const {
   getLists,

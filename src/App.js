@@ -1,99 +1,151 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import ShoppingListDetail from "./components/ShoppingListDetail/ShoppingListDetail";
 import ShoppingListsOverview from "./components/ShoppingListsOverview/ShoppingListsOverview";
+import {
+  getLists,
+  getListDetail,
+  createList,
+  deleteList,
+  updateList,
+} from "./api/shoppingApi";
 
-// "přihlášený" uživatel – necháme vlastníkem Alenu, aby byly dobře vidět ownerské funkce
+// „přihlášený“ uživatel
 const currentUser = {
   id: 1,
   name: "Alena",
 };
 
-// Výchozí seznamy aplikace
-const initialShoppingLists = [
-  {
-    id: 1,
-    name: "Nákup na víkend",
-    owner: { id: 1, name: "Alena" },
-    members: [
-      { id: 1, name: "Alena" },
-      { id: 2, name: "Pepa" },
-    ],
-    items: [
-      { id: 1, name: "mléko", done: false },
-      { id: 2, name: "chléb", done: true },
-    ],
-    archived: false,
-  },
-  {
-    id: 2,
-    name: "Drogerie",
-    owner: { id: 1, name: "Alena" },
-    members: [
-      { id: 1, name: "Alena" },
-      { id: 3, name: "Lenka" },
-    ],
-    items: [
-      { id: 3, name: "šampon", done: false },
-      { id: 4, name: "mýdlo", done: false },
-    ],
-    archived: true, // aby bylo co filtrovat
-  },
-];
-
 function App() {
-  const [lists, setLists] = useState(initialShoppingLists);
-  const [selectedListId, setSelectedListId] = useState(null);
+  // ================================
+  // Přehled seznamů
+  // ================================
+  const [lists, setLists] = useState([]);
+  const [overviewStatus, setOverviewStatus] = useState("pending");
+  const [overviewError, setOverviewError] = useState(null);
 
-  // otevření detailu seznamu
-  const handleOpenList = (id) => {
-    setSelectedListId(id);
+  // ================================
+  // Detail
+  // ================================
+  const [selectedListId, setSelectedListId] = useState(null);
+  const [selectedList, setSelectedList] = useState(null);
+  const [detailStatus, setDetailStatus] = useState("ready");
+  const [detailError, setDetailError] = useState(null);
+
+  // ================================
+  // Načtení přehledu (API)
+  // ================================
+  const loadOverview = async () => {
+    setOverviewStatus("pending");
+    setOverviewError(null);
+
+    try {
+      const data = await getLists();
+      setLists(data);
+      setOverviewStatus("ready");
+    } catch (e) {
+      setOverviewError(e?.message ?? "Neznámá chyba");
+      setOverviewStatus("error");
+    }
   };
 
-  // návrat z detailu na přehled
+  useEffect(() => {
+    loadOverview();
+  }, []);
+
+  // ================================
+  // Otevření detailu (API)
+  // ================================
+  const handleOpenList = async (id) => {
+    setSelectedListId(id);
+    setSelectedList(null);
+    setDetailStatus("pending");
+    setDetailError(null);
+
+    try {
+      const detail = await getListDetail(id);
+      setSelectedList(detail);
+      setDetailStatus("ready");
+    } catch (e) {
+      setDetailError(e?.message ?? "Neznámá chyba");
+      setDetailStatus("error");
+    }
+  };
+
   const handleBackToOverview = () => {
     setSelectedListId(null);
+    setSelectedList(null);
+    setDetailStatus("ready");
+    setDetailError(null);
   };
 
-  // vytvoření nového seznamu (z modálního okna)
-  const handleCreateList = (name) => {
-    const newList = {
-      id: Date.now(),
-      name,
-      owner: { ...currentUser },
-      members: [{ ...currentUser }], // vlastník je zároveň první člen
-      items: [],
-      archived: false,
-    };
-
-    setLists((prev) => [...prev, newList]);
+  // ================================
+  // CRUD – přes API
+  // ================================
+  const handleCreateList = async (name) => {
+    try {
+      await createList({
+        name,
+        owner: currentUser,
+        members: [currentUser],
+      });
+      await loadOverview();
+    } catch (e) {
+      alert(e?.message ?? "Chyba při vytváření seznamu");
+    }
   };
 
-  // smazání seznamu
-  const handleDeleteList = (id) => {
-    setLists((prev) => prev.filter((list) => list.id !== id));
+  const handleDeleteList = async (id) => {
+    try {
+      await deleteList(id);
+      await loadOverview();
+    } catch (e) {
+      alert(e?.message ?? "Chyba při mazání seznamu");
+    }
   };
 
-  // případné přepínání archivace (zatím nevyužíváme, ale může se hodit)
-  const handleToggleArchive = (id) => {
-    setLists((prev) =>
-      prev.map((list) =>
-        list.id === id ? { ...list, archived: !list.archived } : list
-      )
-    );
+  const handleToggleArchive = async (id) => {
+    const list = lists.find((l) => l.id === id);
+    if (!list) return;
+
+    try {
+      await updateList(id, { archived: !list.archived });
+      await loadOverview();
+    } catch (e) {
+      alert(e?.message ?? "Chyba při archivaci");
+    }
   };
 
-  const selectedList = lists.find((list) => list.id === selectedListId) || null;
-
+  // ================================
+  // Render
+  // ================================
   return (
     <div className="app-root">
       <div className="phone">
-        {selectedList ? (
-          <ShoppingListDetail
-            initialData={selectedList}
-            currentUser={currentUser}
-            onBack={handleBackToOverview}
-          />
+        {selectedListId ? (
+          detailStatus === "pending" ? (
+            <div style={{ padding: 16 }}>Načítám detail…</div>
+          ) : detailStatus === "error" ? (
+            <div style={{ padding: 16 }}>
+              <button onClick={handleBackToOverview}>← Zpět</button>
+              <div style={{ marginTop: 12 }}>Chyba: {detailError}</div>
+            </div>
+          ) : (
+            <ShoppingListDetail
+              initialData={selectedList}
+              currentUser={currentUser}
+              onBack={handleBackToOverview}
+            />
+          )
+        ) : overviewStatus === "pending" ? (
+          <div style={{ padding: 16 }}>Načítám seznamy…</div>
+        ) : overviewStatus === "error" ? (
+          <div style={{ padding: 16 }}>
+            <div>Chyba: {overviewError}</div>
+            <button onClick={loadOverview} style={{ marginTop: 8 }}>
+              Zkusit znovu
+            </button>
+          </div>
         ) : (
           <ShoppingListsOverview
             lists={lists}

@@ -2,31 +2,39 @@
 
 // ================================
 // Počáteční mock data aplikace
+// Struktura odpovídá současnému UI:
+// list: { id, name, owner, members, items, archived }
 // ================================
 
 export const INITIAL_DATA = {
   lists: [
     {
-      id: "list-1",
-      name: "Nákup na týden",
-      archived: false,
+      id: 1,
+      name: "Nákup na víkend",
+      owner: { id: 1, name: "Alena" },
       members: [
-        { id: "u-1", name: "Adam" },
-        { id: "u-2", name: "Eva" },
+        { id: 1, name: "Alena" },
+        { id: 2, name: "Pepa" },
       ],
       items: [
-        { id: "i-1", name: "Mléko", amount: "2", done: false },
-        { id: "i-2", name: "Chléb", amount: "1", done: true },
+        { id: 1, name: "mléko", done: false },
+        { id: 2, name: "chléb", done: true },
       ],
+      archived: false,
     },
     {
-      id: "list-2",
+      id: 2,
       name: "Drogerie",
-      archived: false,
-      members: [{ id: "u-1", name: "Adam" }],
-      items: [
-        { id: "i-3", name: "Mýdlo", amount: "1", done: false },
+      owner: { id: 1, name: "Alena" },
+      members: [
+        { id: 1, name: "Alena" },
+        { id: 3, name: "Lenka" },
       ],
+      items: [
+        { id: 3, name: "šampon", done: false },
+        { id: 4, name: "mýdlo", done: false },
+      ],
+      archived: true,
     },
   ],
 };
@@ -38,15 +46,12 @@ export const INITIAL_DATA = {
 export const STORAGE_KEY = "shopping-app-mock-db";
 
 // ================================
-// Helper pro generování ID
+// Helper pro generování číselných ID
 // ================================
-// Použije se při vytváření seznamů,
-// položek a členů v mock API
+// Vrací další volné číslo pro dané pole objektů
 // ================================
 
-export function makeId(prefix = "id") {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return `${prefix}-${crypto.randomUUID()}`;
-  }
-  return `${prefix}-${Math.random().toString(16).slice(2)}`;
+export function nextNumericId(items) {
+  const maxId = items.reduce((max, x) => (x.id > max ? x.id : max), 0);
+  return maxId + 1;
 }

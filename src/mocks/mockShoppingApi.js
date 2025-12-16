@@ -1,6 +1,6 @@
 // src/mocks/mockShoppingApi.js
 
-import { INITIAL_DATA, STORAGE_KEY, makeId } from "./mockData";
+import { INITIAL_DATA, STORAGE_KEY, nextNumericId } from "./mockData";
 
 // ================================
 // Nastavení simulace
@@ -10,11 +10,11 @@ import { INITIAL_DATA, STORAGE_KEY, makeId } from "./mockData";
 const MIN_DELAY = 200;
 const MAX_DELAY = 600;
 
-// šance na chybu (0 až 1). Dej 0, pokud nechceš náhodné chyby.
-const ERROR_RATE = 0.0;
+// šance na chybu (0 až 1). Žádné chyby = 0.0
+const ERROR_RATE = Number(process.env.REACT_APP_MOCK_API_ERROR_RATE) || 0;
 
 // ================================
-// Utility: delay + (volitelně) chyba
+// Utility: delay + simulace sítě
 // ================================
 
 function delay(ms) {
@@ -31,18 +31,25 @@ async function simulateNetwork() {
 }
 
 // ================================
+// Helper: bezpečná kopie objektu
+// ================================
+
+function clone(x) {
+  return JSON.parse(JSON.stringify(x));
+}
+
+// ================================
 // Mock "DB" v localStorage
 // ================================
 
 function readDb() {
   const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return structuredClone(INITIAL_DATA);
+  if (!raw) return clone(INITIAL_DATA);
 
   try {
     return JSON.parse(raw);
   } catch {
-    // když je localStorage rozbitý, obnov default
-    return structuredClone(INITIAL_DATA);
+    return clone(INITIAL_DATA);
   }
 }
 
@@ -50,62 +57,57 @@ function writeDb(db) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
 }
 
-// helper: najdi list podle id
 function findList(db, listId) {
-  const list = db.lists.find((l) => l.id === listId);
+  const id = Number(listId);
+  const list = db.lists.find((l) => l.id === id);
   if (!list) throw new Error(`List "${listId}" not found`);
   return list;
 }
 
 // ================================
-// API funkce (stejné názvy jako kontrakt)
+// API funkce (kontrakt pro UI)
 // ================================
 
-// Přehled seznamů (bez těžkých dat, pokud chceš; tady vracíme basic info)
 export async function getLists() {
   await simulateNetwork();
-
   const db = readDb();
-
-  // Vrátíme jen souhrn (id, name, archived) – detail se načte přes getListDetail
-  return db.lists.map(({ id, name, archived }) => ({ id, name, archived }));
+  return clone(db.lists);
 }
 
-// Detail jednoho seznamu (položky + členové)
 export async function getListDetail(listId) {
   await simulateNetwork();
-
   const db = readDb();
   const list = findList(db, listId);
-
-  // kopie, aby UI nemohlo omylem mutovat "db"
-  return structuredClone(list);
+  return clone(list);
 }
 
-// Vytvoření seznamu
 export async function createList(payload) {
   await simulateNetwork();
 
   const db = readDb();
-
   const name = (payload?.name ?? "").trim();
   if (!name) throw new Error("List name is required");
 
+  const newId = nextNumericId(db.lists);
+
+  const owner = payload?.owner ?? { id: 1, name: "Alena" };
+  const members = payload?.members ?? [owner];
+
   const newList = {
-    id: makeId("list"),
+    id: newId,
     name,
-    archived: false,
-    members: payload?.members ?? [],
+    owner,
+    members,
     items: payload?.items ?? [],
+    archived: false,
   };
 
   db.lists.unshift(newList);
   writeDb(db);
 
-  return structuredClone(newList);
+  return clone(newList);
 }
 
-// Úprava seznamu (např. name, archived)
 export async function updateList(listId, payload) {
   await simulateNetwork();
 
@@ -122,21 +124,22 @@ export async function updateList(listId, payload) {
     list.archived = Boolean(payload.archived);
   }
 
-  // pokud chceš umožnit update celých polí
+  if (payload?.owner !== undefined) list.owner = payload.owner;
   if (payload?.members !== undefined) list.members = payload.members;
   if (payload?.items !== undefined) list.items = payload.items;
 
   writeDb(db);
-  return structuredClone(list);
+  return clone(list);
 }
 
-// Smazání seznamu
 export async function deleteList(listId) {
   await simulateNetwork();
 
   const db = readDb();
+  const id = Number(listId);
+
   const before = db.lists.length;
-  db.lists = db.lists.filter((l) => l.id !== listId);
+  db.lists = db.lists.filter((l) => l.id !== id);
 
   if (db.lists.length === before) {
     throw new Error(`List "${listId}" not found`);
@@ -147,7 +150,7 @@ export async function deleteList(listId) {
 }
 
 // ================================
-// VOLITELNÉ: Item CRUD (pokud to UI má)
+// Item CRUD (pokud UI používá)
 // ================================
 
 export async function createItem(listId, payload) {
@@ -159,17 +162,18 @@ export async function createItem(listId, payload) {
   const name = (payload?.name ?? "").trim();
   if (!name) throw new Error("Item name is required");
 
+  const newId = nextNumericId(list.items);
+
   const newItem = {
-    id: makeId("item"),
+    id: newId,
     name,
-    amount: payload?.amount ?? "",
     done: Boolean(payload?.done),
   };
 
   list.items.unshift(newItem);
   writeDb(db);
 
-  return structuredClone(newItem);
+  return clone(newItem);
 }
 
 export async function updateItem(listId, itemId, payload) {
@@ -178,7 +182,8 @@ export async function updateItem(listId, itemId, payload) {
   const db = readDb();
   const list = findList(db, listId);
 
-  const item = list.items.find((i) => i.id === itemId);
+  const iid = Number(itemId);
+  const item = list.items.find((i) => i.id === iid);
   if (!item) throw new Error(`Item "${itemId}" not found`);
 
   if (payload?.name !== undefined) {
@@ -187,11 +192,10 @@ export async function updateItem(listId, itemId, payload) {
     item.name = name;
   }
 
-  if (payload?.amount !== undefined) item.amount = payload.amount;
   if (payload?.done !== undefined) item.done = Boolean(payload.done);
 
   writeDb(db);
-  return structuredClone(item);
+  return clone(item);
 }
 
 export async function deleteItem(listId, itemId) {
@@ -200,48 +204,12 @@ export async function deleteItem(listId, itemId) {
   const db = readDb();
   const list = findList(db, listId);
 
+  const iid = Number(itemId);
   const before = list.items.length;
-  list.items = list.items.filter((i) => i.id !== itemId);
+  list.items = list.items.filter((i) => i.id !== iid);
 
   if (list.items.length === before) {
     throw new Error(`Item "${itemId}" not found`);
-  }
-
-  writeDb(db);
-  return { ok: true };
-}
-
-// ================================
-// VOLITELNÉ: Members (pokud to UI má)
-// ================================
-
-export async function addMember(listId, payload) {
-  await simulateNetwork();
-
-  const db = readDb();
-  const list = findList(db, listId);
-
-  const name = (payload?.name ?? "").trim();
-  if (!name) throw new Error("Member name is required");
-
-  const newMember = { id: makeId("user"), name };
-  list.members.push(newMember);
-
-  writeDb(db);
-  return structuredClone(newMember);
-}
-
-export async function removeMember(listId, memberId) {
-  await simulateNetwork();
-
-  const db = readDb();
-  const list = findList(db, listId);
-
-  const before = list.members.length;
-  list.members = list.members.filter((m) => m.id !== memberId);
-
-  if (list.members.length === before) {
-    throw new Error(`Member "${memberId}" not found`);
   }
 
   writeDb(db);
