@@ -6,15 +6,14 @@ import { INITIAL_DATA, STORAGE_KEY, nextNumericId } from "./mockData";
 // Nastavení simulace
 // ================================
 
-// umělá latence (ms)
-const MIN_DELAY = 200;
-const MAX_DELAY = 600;
+const MIN_DELAY = 800;
+const MAX_DELAY = 1200;
 
 // šance na chybu (0 až 1). Žádné chyby = 0.0
 const ERROR_RATE = Number(process.env.REACT_APP_MOCK_API_ERROR_RATE) || 0;
 
 // ================================
-// Utility: delay + simulace sítě
+// Utility
 // ================================
 
 function delay(ms) {
@@ -30,16 +29,12 @@ async function simulateNetwork() {
   }
 }
 
-// ================================
-// Helper: bezpečná kopie objektu
-// ================================
-
 function clone(x) {
   return JSON.parse(JSON.stringify(x));
 }
 
 // ================================
-// Mock "DB" v localStorage
+// Mock DB
 // ================================
 
 function readDb() {
@@ -65,7 +60,7 @@ function findList(db, listId) {
 }
 
 // ================================
-// API funkce (kontrakt pro UI)
+// Lists
 // ================================
 
 export async function getLists() {
@@ -150,7 +145,7 @@ export async function deleteList(listId) {
 }
 
 // ================================
-// Item CRUD (pokud UI používá)
+// Items
 // ================================
 
 export async function createItem(listId, payload) {
@@ -210,6 +205,50 @@ export async function deleteItem(listId, itemId) {
 
   if (list.items.length === before) {
     throw new Error(`Item "${itemId}" not found`);
+  }
+
+  writeDb(db);
+  return { ok: true };
+}
+
+// ================================
+// Members
+// ================================
+
+export async function addMember(listId, payload) {
+  await simulateNetwork();
+
+  const db = readDb();
+  const list = findList(db, listId);
+
+  const name = (payload?.name ?? "").trim();
+  if (!name) throw new Error("Member name is required");
+
+  const newId = nextNumericId(list.members);
+
+  const newMember = {
+    id: newId,
+    name,
+  };
+
+  list.members.push(newMember);
+  writeDb(db);
+
+  return clone(newMember);
+}
+
+export async function removeMember(listId, memberId) {
+  await simulateNetwork();
+
+  const db = readDb();
+  const list = findList(db, listId);
+
+  const mid = Number(memberId);
+  const before = list.members.length;
+  list.members = list.members.filter((m) => m.id !== mid);
+
+  if (list.members.length === before) {
+    throw new Error(`Member "${memberId}" not found`);
   }
 
   writeDb(db);

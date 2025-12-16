@@ -19,13 +19,13 @@ const currentUser = {
 function App() {
   const [lists, setLists] = useState([]);
 
-  const [overviewStatus, setOverviewStatus] = useState("pending"); // pending | ready | error
+  const [overviewStatus, setOverviewStatus] = useState("pending");
   const [overviewError, setOverviewError] = useState(null);
   const [overviewActionError, setOverviewActionError] = useState(null);
 
   const [selectedListId, setSelectedListId] = useState(null);
   const [selectedList, setSelectedList] = useState(null);
-  const [detailStatus, setDetailStatus] = useState("ready"); // pending | ready | error
+  const [detailStatus, setDetailStatus] = useState("ready");
   const [detailError, setDetailError] = useState(null);
 
   // ================================
@@ -59,6 +59,13 @@ function App() {
     } catch (e) {
       setOverviewActionError(e?.message ?? "Chyba akce");
     }
+  };
+
+  // ================================
+  // Helper – kontrola vlastnictví
+  // ================================
+  const isOwnerOfList = (list) => {
+    return list?.owner?.id === currentUser.id;
   };
 
   // ================================
@@ -104,16 +111,30 @@ function App() {
     });
   };
 
+  // Smazání – pouze vlastník
   const handleDeleteList = async (id) => {
+    const list = lists.find((l) => l.id === id);
+
+    if (!isOwnerOfList(list)) {
+      setOverviewActionError("Smazat seznam může pouze vlastník.");
+      return;
+    }
+
     await runOverviewAction(async () => {
       await deleteList(id);
       await loadOverview();
     });
   };
 
+  // Archivace – pouze vlastník
   const handleToggleArchive = async (id) => {
     const list = lists.find((l) => l.id === id);
     if (!list) return;
+
+    if (!isOwnerOfList(list)) {
+      setOverviewActionError("Archivovat seznam může pouze vlastník.");
+      return;
+    }
 
     await runOverviewAction(async () => {
       await updateList(id, { archived: !list.archived });
@@ -155,7 +176,7 @@ function App() {
           <div>
             {overviewActionError && (
               <div style={{ marginBottom: 12, color: "crimson" }}>
-                Chyba akce: {overviewActionError}
+                {overviewActionError}
               </div>
             )}
 

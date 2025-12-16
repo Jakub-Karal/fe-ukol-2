@@ -6,14 +6,13 @@ function ShoppingListTile({ list, isOwner, onOpen, onDelete }) {
         border: "1px solid #ddd",
         borderRadius: 12,
         padding: 12,
-        paddingTop: 20, // trochu větší horní padding kvůli tlačítku
+        paddingTop: 20,
         boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
         cursor: "pointer",
         position: "relative",
         background: "#fff",
       }}
     >
-      {/* název posunutý níž, aby nebyl u tlačítka Smazat */}
       <h3 style={{ marginTop: 16, marginBottom: 8 }}>{list.name}</h3>
 
       <div style={{ fontSize: 12, color: "#555", marginBottom: 4 }}>
@@ -21,20 +20,15 @@ function ShoppingListTile({ list, isOwner, onOpen, onDelete }) {
       </div>
 
       {list.archived && (
-        <div
-          style={{
-            fontSize: 11,
-            color: "#a00",
-          }}
-        >
-          Archivovaný
-        </div>
+        <div style={{ fontSize: 11, color: "#a00" }}>Archivovaný</div>
       )}
 
+      {/* Smazání – pouze vlastník */}
       {isOwner && (
         <button
+          type="button"
           onClick={(e) => {
-            e.stopPropagation(); // aby klik na Smazat neotevřel detail
+            e.stopPropagation();
             onDelete();
           }}
           style={{
