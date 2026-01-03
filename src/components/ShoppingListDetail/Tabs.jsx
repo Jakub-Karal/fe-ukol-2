@@ -1,4 +1,8 @@
+import { useTheme } from "../../contexts/ThemeContext";
+
 function Tabs({ activeTab, onChangeTab }) {
+  const { theme } = useTheme();
+
   const tabs = [
     { id: "items", label: "Items" },
     { id: "members", label: "Members" },
@@ -10,7 +14,7 @@ function Tabs({ activeTab, onChangeTab }) {
       style={{
         display: "flex",
         gap: 10,
-        borderBottom: "1px solid #ccc",
+        borderBottom: `1px solid ${theme.borderMedium}`,
         marginBottom: 20,
       }}
     >
@@ -23,11 +27,12 @@ function Tabs({ activeTab, onChangeTab }) {
             border: "none",
             borderBottom:
               activeTab === tab.id
-                ? "2px solid black"
+                ? `2px solid ${theme.text}`
                 : "2px solid transparent",
             background: "none",
             cursor: "pointer",
             fontWeight: activeTab === tab.id ? "bold" : "normal",
+            color: theme.text,
           }}
         >
           {tab.label}

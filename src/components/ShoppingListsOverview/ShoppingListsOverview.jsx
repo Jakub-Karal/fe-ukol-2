@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { getLists, createList, deleteList } from "../../api";
+import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 import ShoppingListTile from "./ShoppingListTile";
 import NewListModal from "./NewListModal";
+import ListsChart from "./ListsChart";
 
 function ShoppingListsOverview({ currentUser, onOpenList }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
   const [status, setStatus] = useState("pending"); // "pending" | "ready" | "error"
   const [error, setError] = useState(null); // string | null
   const [lists, setLists] = useState([]); // array
@@ -28,7 +33,7 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
       } catch (e) {
         if (!alive) return;
 
-        setError(e?.message ?? "Nastala chyba při načítání seznamů.");
+        setError(e?.message ?? t("overview.error"));
         setStatus("error");
       }
     }
@@ -45,7 +50,7 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
 
   const handleDeleteClick = async (list) => {
     const ok = window.confirm(
-      `Opravdu chcete smazat nákupní seznam "${list.name}"?`
+      t("overview.deleteConfirm", { name: list.name })
     );
     if (!ok) return;
 
@@ -55,7 +60,7 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
       setLists((prev) => prev.filter((l) => l.id !== list.id));
       setStatus("ready");
     } catch (e) {
-      setError(e?.message ?? "Mazání se nezdařilo.");
+      setError(e?.message ?? t("overview.error"));
       setStatus("error");
     }
   };
@@ -68,18 +73,20 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
       setIsModalOpen(false);
       setStatus("ready");
     } catch (e) {
-      setError(e?.message ?? "Vytvoření seznamu se nezdařilo.");
+      setError(e?.message ?? t("overview.error"));
       setStatus("error");
     }
   };
 
-  if (status === "pending") return <p>Načítám…</p>;
+  if (status === "pending") return <p>{t("common.loading")}</p>;
 
   return (
     <div>
-      <h1>Přehled nákupních seznamů</h1>
+      <h1 style={{ color: theme.text }}>{t("overview.title")}</h1>
 
-      {status === "error" && <p style={{ color: "crimson" }}>Chyba: {error}</p>}
+      {status === "error" && <p style={{ color: theme.danger }}>{t("common.error")}: {error}</p>}
+
+      <ListsChart lists={lists} />
 
       <div
         style={{
@@ -95,14 +102,14 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
             checked={showArchived}
             onChange={(e) => setShowArchived(e.target.checked)}
           />{" "}
-          Zobrazit včetně archivovaných
+          {t("overview.showArchived")}
         </label>
 
-        <button onClick={() => setIsModalOpen(true)}>+ Nový seznam</button>
+        <button onClick={() => setIsModalOpen(true)}>{t("overview.newList")}</button>
       </div>
 
       {visibleLists.length === 0 ? (
-        <p>Žádné nákupní seznamy k zobrazení.</p>
+        <p>{t("overview.noLists")}</p>
       ) : (
         <div
           style={{

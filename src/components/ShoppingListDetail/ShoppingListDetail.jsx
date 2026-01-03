@@ -12,8 +12,12 @@ import {
   removeMember,
   updateList,
 } from "../../api/shoppingApi";
+import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 function ShoppingListDetail({ initialData, currentUser, onBack }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
   const [list, setList] = useState(null);
 
   const [status, setStatus] = useState("pending"); // pending | ready | error
@@ -40,7 +44,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
       setList(data);
       setStatus("ready");
     } catch (e) {
-      setError(e?.message ?? "Neznámá chyba");
+      setError(e?.message ?? t("common.error"));
       setStatus("error");
     }
   };
@@ -202,18 +206,18 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
             style={{
               fontSize: 14,
               fontWeight: "normal",
-              color: "#555",
+              color: theme.textMuted,
               marginBottom: 4,
             }}
           >
             nákupní seznam :
           </div>
-          <h1 style={{ margin: 0 }}>{list.name}</h1>
+          <h1 style={{ margin: 0, color: theme.text }}>{list.name}</h1>
         </div>
       </header>
 
       {actionError && (
-        <div style={{ marginBottom: 12, color: "crimson" }}>
+        <div style={{ marginBottom: 12, color: theme.danger }}>
           Chyba akce: {actionError}
         </div>
       )}

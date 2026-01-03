@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function MembersTab({
   owner,
@@ -12,6 +13,7 @@ function MembersTab({
   onLeaveList,
   onTransferOwnership,
 }) {
+  const { t } = useTranslation();
   const [selectedMemberId, setSelectedMemberId] = useState("");
 
   useEffect(() => {
@@ -28,18 +30,18 @@ function MembersTab({
 
   return (
     <div>
-      <h2>Členové seznamu</h2>
+      <h2>{t("members.title")}</h2>
 
       <p>
-        <strong>Vlastník:</strong> {owner.name}
+        <strong>{t("members.owner")}:</strong> {owner.name}
       </p>
 
       <p>
-        <strong>Členové:</strong>
+        <strong>{t("members.members")}:</strong>
       </p>
 
       {members.length === 0 ? (
-        <p>Žádní členové.</p>
+        <p>{t("members.noMembers")}</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {members.map((member) => (
@@ -53,7 +55,7 @@ function MembersTab({
               }}
             >
               {isOwner && (
-                <button onClick={() => onRemoveMember(member.id)}>Odebrat</button>
+                <button onClick={() => onRemoveMember(member.id)}>{t("members.remove")}</button>
               )}
               <span>• {member.name}</span>
             </li>
@@ -63,25 +65,25 @@ function MembersTab({
 
       {isOwner && (
         <div style={{ marginTop: 16 }}>
-          <p style={{ marginBottom: 4 }}>Přidat nového člena:</p>
+          <p style={{ marginBottom: 4 }}>{t("members.addMember")}:</p>
           <input
             type="text"
-            placeholder="Jméno nového člena"
+            placeholder={t("members.newMemberPlaceholder")}
             value={newMemberName}
             onChange={(e) => onNewMemberNameChange(e.target.value)}
           />
-          <button onClick={() => onAddMember()}>Přidat člena</button>
+          <button onClick={() => onAddMember()}>{t("members.addMemberButton")}</button>
         </div>
       )}
 
       {isOwner && members.length > 0 && (
         <div style={{ marginTop: 16 }}>
-          <p style={{ marginBottom: 4 }}>Předat vlastnictví jinému členovi:</p>
+          <p style={{ marginBottom: 4 }}>{t("members.transferOwnership")}:</p>
           <select
             value={selectedMemberId}
             onChange={(e) => setSelectedMemberId(e.target.value)}
           >
-            <option value="">Vyberte člena</option>
+            <option value="">{t("members.selectMember")}</option>
             {members.map((member) => (
               <option key={member.id} value={member.id}>
                 {member.name}
@@ -89,14 +91,14 @@ function MembersTab({
             ))}
           </select>
           <button onClick={handleTransferClick} style={{ marginLeft: 8 }}>
-            Předat vlastnictví
+            {t("members.transferOwnership")}
           </button>
         </div>
       )}
 
       {!isOwner && isMember && (
         <div style={{ marginTop: 20 }}>
-          <button onClick={onLeaveList}>Odejít z tohoto seznamu</button>
+          <button onClick={onLeaveList}>{t("members.leaveList")}</button>
         </div>
       )}
     </div>

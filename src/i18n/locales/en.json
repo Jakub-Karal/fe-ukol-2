@@ -1,0 +1,68 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "error": "Error",
+    "tryAgain": "Try again",
+    "back": "Back",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "add": "Add"
+  },
+  "overview": {
+    "title": "Shopping Lists Overview",
+    "showArchived": "Show including archived",
+    "newList": "+ New list",
+    "noLists": "No shopping lists to display.",
+    "owner": "Owner",
+    "archived": "Archived",
+    "deleteConfirm": "Do you really want to delete shopping list \"{{name}}\"?",
+    "newListModal": "New Shopping List",
+    "listName": "List name",
+    "onlyOwnerDelete": "Only the owner can delete the list.",
+    "onlyOwnerArchive": "Only the owner can archive the list.",
+    "error": "Error"
+  },
+  "detail": {
+    "shoppingList": "shopping list :",
+    "loadingDetail": "Loading detail…",
+    "actionError": "Action error: {{error}}"
+  },
+  "tabs": {
+    "items": "Items",
+    "members": "Members",
+    "settings": "Settings"
+  },
+  "items": {
+    "showDone": "Show completed",
+    "noItems": "No items to display.",
+    "newItem": "New item",
+    "statistics": "Statistics"
+  },
+  "members": {
+    "title": "List Members",
+    "owner": "Owner",
+    "members": "Members",
+    "noMembers": "No members.",
+    "addMember": "Add new member",
+    "newMemberPlaceholder": "New member name",
+    "transferOwnership": "Transfer ownership to another member",
+    "selectMember": "Select member",
+    "leaveList": "Leave this list",
+    "addMemberButton": "Add member",
+    "remove": "Remove"
+  },
+  "settings": {
+    "title": "Settings",
+    "listName": "List name",
+    "saveNewName": "Save new name",
+    "membersTitle": "List members",
+    "addMemberButton": "Add member",
+    "addMemberPlaceholder": "New member name"
+  },
+  "charts": {
+    "completed": "Completed",
+    "pending": "Pending",
+    "itemsStatistics": "Items Statistics"
+  }
+}

@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 function NewListModal({ onClose, onCreate }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
   const [name, setName] = useState("");
 
   const handleSubmit = (e) => {
@@ -16,7 +20,7 @@ function NewListModal({ onClose, onCreate }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.3)",
+        background: theme.overlay,
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -25,19 +29,20 @@ function NewListModal({ onClose, onCreate }) {
     >
       <div
         style={{
-          background: "white",
+          background: theme.background,
           padding: 20,
           borderRadius: 12,
           minWidth: 280,
+          color: theme.text,
         }}
       >
-        <h2>Nový nákupní seznam</h2>
+        <h2 style={{ color: theme.text }}>{t("overview.newListModal")}</h2>
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 12 }}>
             <input
               type="text"
-              placeholder="Název seznamu"
+              placeholder={t("overview.listName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               style={{ width: "100%", padding: 8 }}
@@ -52,9 +57,9 @@ function NewListModal({ onClose, onCreate }) {
             }}
           >
             <button type="button" onClick={onClose}>
-              Zrušit
+              {t("common.cancel")}
             </button>
-            <button type="submit">Vytvořit</button>
+            <button type="submit">{t("common.create")}</button>
           </div>
         </form>
       </div>

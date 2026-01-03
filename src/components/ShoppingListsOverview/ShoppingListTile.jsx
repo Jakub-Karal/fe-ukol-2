@@ -1,26 +1,32 @@
+import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+
 function ShoppingListTile({ list, isOwner, onOpen, onDelete }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+
   return (
     <div
       onClick={onOpen}
       style={{
-        border: "1px solid #ddd",
+        border: `1px solid ${theme.border}`,
         borderRadius: 12,
         padding: 12,
         paddingTop: 20,
-        boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+        boxShadow: `0 2px 4px ${theme.shadow}`,
         cursor: "pointer",
         position: "relative",
-        background: "#fff",
+        background: theme.background,
       }}
     >
-      <h3 style={{ marginTop: 16, marginBottom: 8 }}>{list.name}</h3>
+      <h3 style={{ marginTop: 16, marginBottom: 8, color: theme.text }}>{list.name}</h3>
 
-      <div style={{ fontSize: 12, color: "#555", marginBottom: 4 }}>
-        Vlastník: {list.owner.name}
+      <div style={{ fontSize: 12, color: theme.textMuted, marginBottom: 4 }}>
+        {t("overview.owner")}: {list.owner.name}
       </div>
 
       {list.archived && (
-        <div style={{ fontSize: 11, color: "#a00" }}>Archivovaný</div>
+        <div style={{ fontSize: 11, color: theme.danger }}>{t("overview.archived")}</div>
       )}
 
       {/* Smazání – pouze vlastník */}
@@ -38,7 +44,7 @@ function ShoppingListTile({ list, isOwner, onOpen, onDelete }) {
             fontSize: 11,
           }}
         >
-          Smazat
+          {t("common.delete")}
         </button>
       )}
     </div>

@@ -9,6 +9,10 @@ import {
   deleteList,
   updateList,
 } from "./api/shoppingApi";
+import { useTheme } from "./contexts/ThemeContext";
+import ThemeToggle from "./components/ThemeToggle/ThemeToggle";
+import LanguageSwitcher from "./components/LanguageSwitcher/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 // „přihlášený“ uživatel
 const currentUser = {
@@ -17,6 +21,9 @@ const currentUser = {
 };
 
 function App() {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+
   const [lists, setLists] = useState([]);
 
   const [overviewStatus, setOverviewStatus] = useState("pending");
@@ -27,6 +34,16 @@ function App() {
   const [selectedList, setSelectedList] = useState(null);
   const [detailStatus, setDetailStatus] = useState("ready");
   const [detailError, setDetailError] = useState(null);
+
+  // Set CSS variables for theme
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--bg-app-root", theme.mode === "light" ? "#f2f2f2" : "#0d0d0d");
+    root.style.setProperty("--bg-phone", theme.background);
+    root.style.setProperty("--text-color", theme.text);
+    root.style.setProperty("--border-color", theme.border);
+    root.style.setProperty("--phone-shadow", `0 8px 24px ${theme.shadow}`);
+  }, [theme]);
 
   // ================================
   // Přehled – načtení (API)
@@ -116,7 +133,7 @@ function App() {
     const list = lists.find((l) => l.id === id);
 
     if (!isOwnerOfList(list)) {
-      setOverviewActionError("Smazat seznam může pouze vlastník.");
+      setOverviewActionError(t("overview.onlyOwnerDelete"));
       return;
     }
 
@@ -132,7 +149,7 @@ function App() {
     if (!list) return;
 
     if (!isOwnerOfList(list)) {
-      setOverviewActionError("Archivovat seznam může pouze vlastník.");
+      setOverviewActionError(t("overview.onlyOwnerArchive"));
       return;
     }
 
@@ -147,14 +164,16 @@ function App() {
   // ================================
   return (
     <div className="app-root">
+      <ThemeToggle />
+      <LanguageSwitcher />
       <div className="phone">
         {selectedListId ? (
           detailStatus === "pending" ? (
-            <div style={{ padding: 16 }}>Načítám detail…</div>
+            <div style={{ padding: 16 }}>{t("detail.loadingDetail")}</div>
           ) : detailStatus === "error" ? (
             <div style={{ padding: 16 }}>
-              <button onClick={handleBackToOverview}>← Zpět</button>
-              <div style={{ marginTop: 12 }}>Chyba: {detailError}</div>
+              <button onClick={handleBackToOverview}>← {t("common.back")}</button>
+              <div style={{ marginTop: 12 }}>{t("common.error")}: {detailError}</div>
             </div>
           ) : (
             <ShoppingListDetail
@@ -164,18 +183,18 @@ function App() {
             />
           )
         ) : overviewStatus === "pending" ? (
-          <div style={{ padding: 16 }}>Načítám seznamy…</div>
+          <div style={{ padding: 16 }}>{t("common.loading")}</div>
         ) : overviewStatus === "error" ? (
           <div style={{ padding: 16 }}>
-            <div>Chyba: {overviewError}</div>
+            <div>{t("common.error")}: {overviewError}</div>
             <button onClick={loadOverview} style={{ marginTop: 8 }}>
-              Zkusit znovu
+              {t("common.tryAgain")}
             </button>
           </div>
         ) : (
           <div>
             {overviewActionError && (
-              <div style={{ marginBottom: 12, color: "crimson" }}>
+              <div style={{ marginBottom: 12, color: theme.danger }}>
                 {overviewActionError}
               </div>
             )}

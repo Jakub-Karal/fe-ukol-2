@@ -1,4 +1,10 @@
+import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+
 function ItemRow({ item, onToggleDone, onRemoveItem }) {
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+
   return (
     <li
       style={{
@@ -18,13 +24,13 @@ function ItemRow({ item, onToggleDone, onRemoveItem }) {
         style={{
           flex: 1,
           textDecoration: item.done ? "line-through" : "none",
-          color: item.done ? "#888" : "inherit",
+          color: item.done ? theme.disabled : theme.text,
         }}
       >
         {item.name}
       </span>
 
-      <button onClick={() => onRemoveItem(item.id)}>Smazat</button>
+      <button onClick={() => onRemoveItem(item.id)}>{t("common.delete")}</button>
     </li>
   );
 }
