@@ -91,7 +91,8 @@ function ShoppingListsOverview({ currentUser, onOpenList }) {
       <div
         style={{
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
+          alignItems: "flex-start",
           gap: 12,
           marginBottom: 16,
         }}

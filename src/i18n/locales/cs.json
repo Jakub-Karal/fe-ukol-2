@@ -29,9 +29,9 @@
     "actionError": "Chyba akce: {{error}}"
   },
   "tabs": {
-    "items": "Items",
-    "members": "Members",
-    "settings": "Settings"
+    "items": "Položky",
+    "members": "Členové",
+    "settings": "Nastavení"
   },
   "items": {
     "showDone": "Zobrazit i vyřešené",

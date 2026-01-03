@@ -27,7 +27,7 @@ function ListsChart({ lists }) {
   }
 
   return (
-    <div style={{ marginTop: 20, marginBottom: 20 }}>
+    <div style={{ marginTop: 20, marginBottom: 20, maxWidth: 500, margin: '20px auto' }}>
       <h3 style={{ marginBottom: 12, color: theme.text, fontSize: 16 }}>
         {t("charts.itemsStatistics")}
       </h3>
@@ -50,6 +50,12 @@ function ListsChart({ lists }) {
               border: `1px solid ${theme.border}`,
               color: theme.text,
               borderRadius: 8,
+            }}
+            itemStyle={{
+              color: theme.text,
+            }}
+            labelStyle={{
+              color: theme.text,
             }}
           />
           <Legend

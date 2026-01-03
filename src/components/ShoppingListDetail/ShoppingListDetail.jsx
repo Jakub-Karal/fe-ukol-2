@@ -61,7 +61,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
     try {
       await fn();
     } catch (e) {
-      setActionError(e?.message ?? "Chyba akce");
+      setActionError(e?.message ?? t("common.error"));
     }
   };
 
@@ -174,16 +174,16 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
   // Render – pending / error / ready
   // ================================
   if (status === "pending") {
-    return <div style={{ padding: 16 }}>Načítám detail…</div>;
+    return <div style={{ padding: 16 }}>{t("detail.loadingDetail")}</div>;
   }
 
   if (status === "error") {
     return (
       <div style={{ padding: 16 }}>
-        <button onClick={onBack}>← Návrat</button>
-        <div style={{ marginTop: 12 }}>Chyba: {error}</div>
+        <button onClick={onBack}>← {t("common.back")}</button>
+        <div style={{ marginTop: 12 }}>{t("common.error")}: {error}</div>
         <button onClick={loadDetail} style={{ marginTop: 8 }}>
-          Zkusit znovu
+          {t("common.tryAgain")}
         </button>
       </div>
     );
@@ -198,7 +198,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
           style={{ border: "none", background: "none", cursor: "pointer" }}
           onClick={onBack}
         >
-          ← Návrat
+          ← {t("common.back")}
         </button>
 
         <div style={{ marginTop: 12 }}>
@@ -210,7 +210,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
               marginBottom: 4,
             }}
           >
-            nákupní seznam :
+            {t("detail.shoppingList")}
           </div>
           <h1 style={{ margin: 0, color: theme.text }}>{list.name}</h1>
         </div>
@@ -218,7 +218,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
 
       {actionError && (
         <div style={{ marginBottom: 12, color: theme.danger }}>
-          Chyba akce: {actionError}
+          {t("detail.actionError", { error: actionError })}
         </div>
       )}
 

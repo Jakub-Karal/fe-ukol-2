@@ -53,6 +53,12 @@ function ItemsChart({ items }) {
               color: theme.text,
               borderRadius: 8,
             }}
+            itemStyle={{
+              color: theme.text,
+            }}
+            labelStyle={{
+              color: theme.text,
+            }}
           />
           <Legend
             wrapperStyle={{

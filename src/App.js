@@ -164,8 +164,10 @@ function App() {
   // ================================
   return (
     <div className="app-root">
-      <ThemeToggle />
-      <LanguageSwitcher />
+      <div className="controls-wrapper">
+        <LanguageSwitcher />
+        <ThemeToggle />
+      </div>
       <div className="phone">
         {selectedListId ? (
           detailStatus === "pending" ? (

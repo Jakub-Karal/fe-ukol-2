@@ -1,12 +1,14 @@
 import { useTheme } from "../../contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 function Tabs({ activeTab, onChangeTab }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const tabs = [
-    { id: "items", label: "Items" },
-    { id: "members", label: "Members" },
-    { id: "settings", label: "Settings" },
+    { id: "items", label: t("tabs.items") },
+    { id: "members", label: t("tabs.members") },
+    { id: "settings", label: t("tabs.settings") },
   ];
 
   return (
