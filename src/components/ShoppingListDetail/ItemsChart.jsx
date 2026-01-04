@@ -1,4 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 
@@ -57,11 +57,6 @@ function ItemsChart({ items }) {
               color: theme.text,
             }}
             labelStyle={{
-              color: theme.text,
-            }}
-          />
-          <Legend
-            wrapperStyle={{
               color: theme.text,
             }}
           />

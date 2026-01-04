@@ -27,7 +27,7 @@ export const themes = {
     borderMedium: "#444444",
     primary: "#4d94ff",
     danger: "#ff4444",
-    success: "#44ff44",
+    success: "#2a9d2a",
     warning: "#ffaa44",
     disabled: "#666666",
     overlay: "rgba(0,0,0,0.7)",

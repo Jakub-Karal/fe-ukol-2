@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Tabs from "./Tabs";
 import ItemsTab from "./ItemsTab";
 import MembersTab from "./MembersTab";
@@ -35,7 +35,7 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
   // ================================
   // Načtení detailu (API)
   // ================================
-  const loadDetail = async () => {
+  const loadDetail = useCallback(async () => {
     setStatus("pending");
     setError(null);
 
@@ -47,11 +47,11 @@ function ShoppingListDetail({ initialData, currentUser, onBack }) {
       setError(e?.message ?? t("common.error"));
       setStatus("error");
     }
-  };
+  }, [initialData.id, t]);
 
   useEffect(() => {
     loadDetail();
-  }, [initialData.id]);
+  }, [loadDetail]);
 
   // ================================
   // Helper pro akce (mutace) s try/catch
