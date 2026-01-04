@@ -94,7 +94,7 @@ function MembersTab({
         </div>
       )}
 
-      {/* Tlačítko Odejít – pouze pro běžného člena (už není vlastník) */}
+      {/* Tlačítko Odejít – pouze pro běžného člena (není vlastník) */}
       {!isOwner && isMember && (
         <div style={{ marginTop: 20 }}>
           <button onClick={onLeaveList}>Odejít z tohoto seznamu</button>
