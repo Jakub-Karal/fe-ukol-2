@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 function ItemsFilter({ showDone, onShowDoneChange }) {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -13,7 +17,7 @@ function ItemsFilter({ showDone, onShowDoneChange }) {
           checked={showDone}
           onChange={(e) => onShowDoneChange(e.target.checked)}
         />{" "}
-        Zobrazit i vyřešené
+        {t("items.showDone")}
       </label>
     </div>
   );

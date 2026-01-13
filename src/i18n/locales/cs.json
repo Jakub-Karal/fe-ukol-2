@@ -1,0 +1,68 @@
+{
+  "common": {
+    "loading": "Načítám…",
+    "error": "Chyba",
+    "tryAgain": "Zkusit znovu",
+    "back": "Návrat",
+    "cancel": "Zrušit",
+    "create": "Vytvořit",
+    "delete": "Smazat",
+    "add": "Přidat"
+  },
+  "overview": {
+    "title": "Přehled nákupních seznamů",
+    "showArchived": "Zobrazit včetně archivovaných",
+    "newList": "+ Nový seznam",
+    "noLists": "Žádné nákupní seznamy k zobrazení.",
+    "owner": "Vlastník",
+    "archived": "Archivovaný",
+    "deleteConfirm": "Opravdu chcete smazat nákupní seznam \"{{name}}\"?",
+    "newListModal": "Nový nákupní seznam",
+    "listName": "Název seznamu",
+    "onlyOwnerDelete": "Smazat seznam může pouze vlastník.",
+    "onlyOwnerArchive": "Archivovat seznam může pouze vlastník.",
+    "error": "Chyba"
+  },
+  "detail": {
+    "shoppingList": "nákupní seznam :",
+    "loadingDetail": "Načítám detail…",
+    "actionError": "Chyba akce: {{error}}"
+  },
+  "tabs": {
+    "items": "Položky",
+    "members": "Členové",
+    "settings": "Nastavení"
+  },
+  "items": {
+    "showDone": "Zobrazit i vyřešené",
+    "noItems": "Žádné položky k zobrazení.",
+    "newItem": "Nová položka",
+    "statistics": "Statistiky"
+  },
+  "members": {
+    "title": "Členové seznamu",
+    "owner": "Vlastník",
+    "members": "Členové",
+    "noMembers": "Žádní členové.",
+    "addMember": "Přidat nového člena",
+    "newMemberPlaceholder": "Jméno nového člena",
+    "transferOwnership": "Předat vlastnictví jinému členovi",
+    "selectMember": "Vyberte člena",
+    "leaveList": "Odejít z tohoto seznamu",
+    "addMemberButton": "Přidat člena",
+    "remove": "Odebrat"
+  },
+  "settings": {
+    "title": "Nastavení",
+    "listName": "Název seznamu",
+    "saveNewName": "Uložit nový název",
+    "membersTitle": "Členové seznamu",
+    "addMemberButton": "Přidat člena",
+    "addMemberPlaceholder": "Jméno nového člena"
+  },
+  "charts": {
+    "completed": "Vyřešeno",
+    "pending": "Nevyřešeno",
+    "itemsStatistics": "Statistiky položek"
+  }
+}
